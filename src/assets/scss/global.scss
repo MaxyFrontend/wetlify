@@ -1,0 +1,25 @@
+body,html {
+    font-family: 'Montserrat';
+}
+.container {
+    width: calc(100% - 100px);
+    max-width: 1620px; 
+    margin: 0 auto;
+    padding: 0 20px;
+}
+.current-location {
+    display: flex;
+    align-items: center;
+}
+.current-location__icon {
+    margin-right: 10px;
+}
+.current-location__value {
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+    color: #FFFFFF;
+}
+svg {
+    transition: $base-transition;
+}

@@ -1,0 +1,16 @@
+@media (max-width:1600px) {
+    .container {
+        width: calc(100% - 60px);
+    }
+}
+@media (max-width:1200px) {
+    .container {
+        width: 100%;
+    }
+}
+@media (max-width:400px) {
+    .container {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+}
