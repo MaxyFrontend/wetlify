@@ -146,11 +146,6 @@ const CurrentCityStore = useCurrentCityStore()
         display: none;
     }
 }
-@media (max-width:400px) {
-    .header__get-location-btn {
-       // max-width: 40px;
-    }
-}
 @media (max-width:370px) {
         .header__city-search_input {
         padding: 16px 20px 16px 50px;
