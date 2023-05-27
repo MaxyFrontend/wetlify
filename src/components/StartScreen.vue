@@ -1,5 +1,5 @@
 <template>
-    <section class="start-screen" v-if="CurrentCityStore.value.length === 0">
+    <section class="start-screen" v-if="WeatherStore.currentCityName.length === 0">
         <div class="container start-screen__container">
             <div class="start-screen__content">
                 <h1 class="start-screen__title">Добро пожаловать на wetlify</h1>
@@ -7,9 +7,6 @@
                     Найдите ваш населенный пункт
                 </h3>
                 <CitySearch class="start-screen__city-search" />
-                <p class="start-screen__get-current-location-title">
-
-                </p>
                 <GetCurrentLocationBtn class="start-screen__get-location-btn" />
             </div>
         </div>
@@ -18,9 +15,9 @@
 
 <script setup>
 import CitySearch from "./CitySearch.vue";
-import { useCurrentCityStore } from '@/stores/CurrentCityStore.js'
+import { useWeatherStore } from '@/stores/WeatherStore.js'
 import GetCurrentLocationBtn from './getCurrentLocationBtn.vue'
-const CurrentCityStore = useCurrentCityStore()
+const WeatherStore = useWeatherStore()
 </script>
 
 <style lang="scss">
@@ -52,7 +49,7 @@ const CurrentCityStore = useCurrentCityStore()
     margin: 0 auto 40px;
 }
 .start-screen__get-location-btn {
-   display: none;
+    display: none;
 }
 @media (max-width:1600px) {
     .start-screen__title {

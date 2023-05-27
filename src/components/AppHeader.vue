@@ -1,12 +1,12 @@
 <template>
-    <header :class="['header', {'forecast-screen__header': CurrentCityStore.weatherLoading !== null}]">
+    <header :class="['header', {'forecast-screen__header': WeatherStore.weatherLoading !== null}]">
         <div class="container header__container">
             <AppLogo class="header__logo" />
-            <GetCurrentLocationBtn class="header__get-location-btn" v-if="CurrentCityStore.weatherLoading === null" />
-            <div class="header__location-inner" v-if="CurrentCityStore.value.length > 0">
+            <GetCurrentLocationBtn class="header__get-location-btn" v-if="WeatherStore.weatherLoading === null" />
+            <div class="header__location-inner" v-if="WeatherStore.currentCityName.length > 0">
                 <div class="current-location header__current-location">
                     <LocationIcon class="current-location__icon" />
-                    <p class="current-location__value"> {{ CurrentCityStore.value }} </p>
+                    <p class="current-location__value"> {{ WeatherStore.currentCityName }} </p>
                 </div>
                 <CitySearch class="header__city-search" />
             </div>
@@ -21,8 +21,8 @@ import AppLogo from '@/components/AppLogo.vue'
 import LocationIcon from './Icons/LocationIcon.vue'
 import CitySearch from './CitySearch.vue';
 import ThemeSwitcher from './ThemeSwitcher.vue';
-import { useCurrentCityStore } from '@/stores/CurrentCityStore.js'
-const CurrentCityStore = useCurrentCityStore()
+import { useWeatherStore } from '@/stores/WeatherStore.js'
+const WeatherStore = useWeatherStore()
 </script>
 
 <style lang="scss">
@@ -147,7 +147,7 @@ const CurrentCityStore = useCurrentCityStore()
     }
 }
 @media (max-width:370px) {
-        .header__city-search_input {
+    .header__city-search_input {
         padding: 16px 20px 16px 50px;
     }
 }

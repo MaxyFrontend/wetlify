@@ -1,7 +1,7 @@
 <template>
-    <div class="forecast-screen" v-if="CurrentCityStore.weatherLoading !== null">
+    <div class="forecast-screen" v-if="WeatherStore.weatherLoading !== null">
         <div class="container forecast-screen__container">
-            <div class="current-weather" v-if="currentWeather && !CurrentCityStore.weatherLoading">
+            <div class="current-weather" v-if="currentWeather && !WeatherStore.weatherLoading">
                 <div class="current-weather__content">
                     <div class="current-weather__left-col current-weather__col">
                         <div class="current-weather__temp">
@@ -26,7 +26,7 @@
                 </div>
                 <p class="current-weather__date">Сегодня</p>
             </div>
-            <content-loader class="loading-skeleton current-weather-skeleton" v-if="CurrentCityStore.weatherLoading === true"
+            <content-loader class="loading-skeleton current-weather-skeleton" v-if="WeatherStore.weatherLoading === true"
                 width="100%"
                 height="240"
                 :speed="1.5"
@@ -40,8 +40,8 @@
                 <text x="0" y="54" class="current-weather-skeleton__text">*°C</text>
                 <rect class="current-weather-skeleton__placeholder current-weather-skeleton__date" x="0" y="164" rx="3" ry="3" width="100" height="6" />
             </content-loader>
-            <div class="daily-weather" v-if="dailyWeather && CurrentCityStore.weatherLoading === false">
-                <div class="daily-weather__item" v-for="(item, idx) in CurrentCityStore.dailyWeather" :key="idx">
+            <div class="daily-weather" v-if="dailyWeather && WeatherStore.weatherLoading === false">
+                <div class="daily-weather__item" v-for="(item, idx) in WeatherStore.dailyWeather" :key="idx">
                     <div class="daily-weather__item_left-col">
                         <p class="daily-weather__item_date daily-weather__item_param">{{ item.date }}</p>
                         <div class="daily-weather__item_temp daily-weather__item_param">
@@ -63,7 +63,7 @@
                     <img class="daily-weather__item_icon" :src="item.weather[0].icon" :alt="item.weather[0].description" />
                 </div>
             </div>
-            <content-loader class="loading-skeleton daily-weather-skeleton desktop-daily-weather-skeleton" v-if="CurrentCityStore.weatherLoading === true"
+            <content-loader class="loading-skeleton daily-weather-skeleton desktop-daily-weather-skeleton" v-if="WeatherStore.weatherLoading === true"
                 viewBox="0 0 1600 220"
                 :speed="1.5"
                 :primaryColor="contentLoaderPrimaryColor"
@@ -74,7 +74,7 @@
                 <rect x="62%" y="0" rx="25" ry="35" width="18%" height="100%" />
                 <rect x="82%" y="0" rx="25" ry="35" width="18%" height="100%" />
             </content-loader>
-            <content-loader class="loading-skeleton daily-weather-skeleton mobile-daily-weather-skeleton" v-if="CurrentCityStore.weatherLoading === true"
+            <content-loader class="loading-skeleton daily-weather-skeleton mobile-daily-weather-skeleton" v-if="WeatherStore.weatherLoading === true"
                 viewBox="0 0 1000 590"
                 :speed="1.5"
                 :primaryColor="contentLoaderPrimaryColor"
@@ -91,18 +91,17 @@
 </template>
 
 <script setup>
-import { useCurrentCityStore } from '@/stores/CurrentCityStore'
+import { useWeatherStore } from '@/stores/WeatherStore'
 import { computed } from 'vue';
-// import ContentLoader from "@/components/ContentLoader.vue"
 import { ContentLoader } from 'vue-content-loader'
 import { useColorThemeStore } from '@/stores/ColorThemeStore'
 const ColorThemeStore = useColorThemeStore()
-const CurrentCityStore = useCurrentCityStore()
+const WeatherStore = useWeatherStore()
 const currentWeather = computed(() => {
-    return CurrentCityStore.currentWeather
+    return WeatherStore.currentWeather
 })
 const dailyWeather = computed(() => {
-    return CurrentCityStore.dailyWeather
+    return WeatherStore.dailyWeather
 })
 console.log(currentWeather)
 const contentLoaderPrimaryColor = computed(() => {
@@ -192,12 +191,12 @@ const contentLoaderSecondaryColor = computed(() => {
     & .current-weather-skeleton__circle {
         r: 79px;
         cx: calc(100% - 99px);
-        cy:79px;
+        cy: 79px;
     }
     & .current-weather-skeleton__humidity {
         x: calc(100% - 144px);
         width: 89px;
-        y:174px;
+        y: 174px;
     }
 }
 .daily-weather {
@@ -279,7 +278,7 @@ const contentLoaderSecondaryColor = computed(() => {
         }
         & .current-weather-skeleton__humidity {
             x: calc(100% - 109px);
-            y:164px;
+            y: 164px;
         }
     }
     .daily-weather {

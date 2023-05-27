@@ -1,14 +1,14 @@
 <template>
-    <div :class="['city-search', props.class, {'dropdown-active': citiesSearchList && inputFocused}]">
-        <div :class="['city-search__input-wrapper', {'result-valid': citiesSearchList && !isSearchListEmpty && inputFocused, 'result-invalid':citiesSearchList && isSearchListEmpty && citySearchQuery.length>0 && inputFocused}]">
-            <input ref="citySearchInput" type="text" :class="['city-search__input', `${props.class}_input`]" placeholder="Поиск..." v-model="citySearchQuery" @input="searchInputChange" @focus="inputFocused=true" @keydown="inputKeyDown" @blur="inputBlur">
+    <div :class="['city-search', props.class, {'dropdown-active': citiesSearchList !== null && inputFocused}]">
+        <div :class="['city-search__input-wrapper', {'result-valid': citiesSearchList !== null && citySearchQuery.length>0 && citiesSearchList.length > 0 && inputFocused, 'result-invalid': citiesSearchList !== null && citySearchQuery.length>0 && citiesSearchList.length === 0 && citySearchQuery.length>0 && inputFocused}]">
+            <input ref="citySearchInput" type="text" :class="['city-search__input', `${props.class}_input`]" placeholder="Поиск..." v-model="citySearchQuery" @input="searchInputChange" @focus="searchInputFocus" @keydown="inputKeyDown" @blur="inputBlur">
             <SearchIcon :class="['city-search__icon', `${props.class}_icon`]" />
             <DataLoader class="city-search__data-loader" :visible="isLoading" />
         </div>
         <transition name="fade-in">
-            <div class="city-search__list" v-if="citiesSearchList && inputFocused" @mouseleave="dropDownMouseLeave(); dropDownMousePressed = false" @mousedown="dropDownMousePressed = true" @mouseup="dropDownMousePressed = false">
+            <div class="cities-search__dropdown" v-if="citiesSearchList !== null && inputFocused" @mouseleave="dropDownMouseLeave(); dropDownMousePressed = false" @mousedown="dropDownMousePressed = true" @mouseup="dropDownMousePressed = false">
                 <p class="city-search__list_error" v-if="citiesSearchList.length === 0 && citySearchQuery.length>0">Такого населенного пункта нет</p>
-                <template v-else>
+                <div class="city-search__list" v-if="citiesSearchList">
                     <div :class="['city-search__list_item', {'active': citiesSearchList[idx].active}]" v-for="(item, idx) in citiesSearchList" :key="idx" @click="cityChoose(idx)" @mouseenter="dropDownItemHover(idx)">
                         <template v-if="item.properties.state">
                             {{ item.properties.city + ', ' + item.properties.state + ', ' + item.properties.country }}
@@ -17,7 +17,7 @@
                             {{ item.properties.city + ', ' + item.properties.country }}
                         </template>
                     </div>
-                </template>
+                </div>
             </div>
         </transition>
     </div>
@@ -25,12 +25,13 @@
 
 <script setup>
 import SearchIcon from './Icons/SearchIcon.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import DataLoader from './DataLoader.vue';
-import { useCurrentCityStore } from '@/stores/CurrentCityStore.js'
-const CurrentCityStore = useCurrentCityStore()
+import { useWeatherStore } from '@/stores/WeatherStore.js'
+import { useCitiesHistoryStore } from '@/stores/CitiesHistoryStore.js'
+const WeatherStore = useWeatherStore()
+const CitiesHistoryStore = useCitiesHistoryStore()
 const citiesSearchList = ref(null)
-const isSearchListEmpty = ref(true)
 const citySearchInput = ref(null)
 const isLoading = ref(false)
 const inputFocused = ref(false)
@@ -39,41 +40,45 @@ const queryTimeOut = ref(null)
 const currentCityIdx = ref(null)
 const dropDownMousePressed = ref(false)
 const inputKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-        if (e.key === 'Enter') {
+    if (e.key === 'Enter') {
+        citiesSearchList.value.forEach((item, idx) => {
+            if (item.active) {
+                cityChoose(idx)
+            }
+        })
+    }
+    else {
+        if (citiesSearchList.value && citiesSearchList.value.length > 0) {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault()
+                if (currentCityIdx.value === citiesSearchList.value.length - 1 || currentCityIdx.value === null) {
+                    currentCityIdx.value = 0
+                }
+                else {
+                    currentCityIdx.value++
+                }
+                citySearchQuery.value = citiesSearchList.value[currentCityIdx.value].properties.city
+                citySearchInput.value.selectionStart = citySearchInput.value.selectionEnd = citySearchQuery.value.length;
+            }
+            else if (e.key === 'ArrowUp') {
+                e.preventDefault()
+                if (currentCityIdx.value === 0 || currentCityIdx.value === null) {
+                    currentCityIdx.value = citiesSearchList.value.length - 1
+                }
+                else {
+                    currentCityIdx.value--
+                }
+                citySearchQuery.value = citiesSearchList.value[currentCityIdx.value].properties.city
+                citySearchInput.value.selectionStart = citySearchInput.value.selectionEnd = citySearchQuery.value.length;
+            }
             citiesSearchList.value.forEach((item, idx) => {
-                if (item.active) {
-                    cityChoose(idx)
+                if (idx === currentCityIdx.value) {
+                    item.active = true
+                }
+                else {
+                    item.active = false
                 }
             })
-        }
-        else {
-            if (citiesSearchList.value && citiesSearchList.value.length > 0) {
-                if (e.key === 'ArrowDown') {
-                    if (currentCityIdx.value === citiesSearchList.value.length - 1 || currentCityIdx.value === null) {
-                        currentCityIdx.value = 0
-                    }
-                    else {
-                        currentCityIdx.value++
-                    }
-                }
-                else if (e.key === 'ArrowUp') {
-                    if (currentCityIdx.value === 0 || currentCityIdx.value === null) {
-                        currentCityIdx.value = citiesSearchList.value.length - 1
-                    }
-                    else {
-                        currentCityIdx.value--
-                    }
-                }
-                citiesSearchList.value.forEach((item, idx) => {
-                    if (idx === currentCityIdx.value) {
-                        item.active = true
-                    }
-                    else {
-                        item.active = false
-                    }
-                })
-            }
         }
     }
 }
@@ -98,6 +103,12 @@ const dropDownMouseLeave = () => {
     }
     currentCityIdx.value = null
 }
+const searchInputFocus = () => {
+    if (citySearchQuery.value.length === 0 && CitiesHistoryStore.citiesList.length > 0) {
+        citiesSearchList.value = CitiesHistoryStore.citiesList
+    }
+    inputFocused.value = true
+}
 const inputBlur = (e) => {
     if (dropDownMousePressed.value) {
         e.preventDefault();
@@ -114,13 +125,21 @@ const inputBlur = (e) => {
     }
 }
 const searchInputChange = () => {
+    if (citySearchQuery.value.length === 0) {
+        citiesSearchList.value = CitiesHistoryStore.citiesList
+    }
     clearTimeout(queryTimeOut.value)
     queryTimeOut.value = setTimeout(() => {
         if (citySearchQuery.value.length > 0) {
             searchCity()
         }
         else {
-            citiesSearchList.value = null
+            if (CitiesHistoryStore.citiesList.length > 0) {
+                citiesSearchList.value = CitiesHistoryStore.citiesList
+            }
+            else {
+                citiesSearchList.value = null
+            }
         }
     }, 300)
 }
@@ -129,8 +148,8 @@ const cityChoose = (idx) => {
     citySearchInput.value.blur()
     inputFocused.value = false
     citySearchQuery.value = ''
+    CitiesHistoryStore.addCity(citiesSearchList.value[idx])
     citiesSearchList.value = null
-    isSearchListEmpty.value = true
 }
 const searchCity = async () => {
     let apiKey = '800dd35af7b245af85b0701fa0cdd045'
@@ -163,24 +182,23 @@ const searchCity = async () => {
                 if (citySearchQuery.value.length === 0) {
                     citiesSearchList.value = null
                 }
-                isSearchListEmpty.value = true
-            }
-            else {
-                isSearchListEmpty.value = false
             }
         })
         .catch((error) => {
             console.log(error)
         });
 }
-const getRegionForecast = (id) => {
+const getRegionForecast = async (id) => {
     let currentRegionLat = citiesSearchList.value[id].properties.lat
     let currentRegionLon = citiesSearchList.value[id].properties.lon
     let currentCity = citiesSearchList.value[id].properties.city
     let currentCountry = citiesSearchList.value[id].properties.country
-    CurrentCityStore.setCity(`${currentCity}, ${currentCountry}`)
-    CurrentCityStore.getWeather(currentRegionLat, currentRegionLon)
+    WeatherStore.setCityName(`${currentCity}, ${currentCountry}`)
+    await WeatherStore.getWeather(currentRegionLat, currentRegionLon)
 }
+onMounted(() => {
+    CitiesHistoryStore.getCitiesFromLS()
+})
 const props = defineProps({
     class: {
         type: String,
@@ -256,12 +274,14 @@ const props = defineProps({
     right: 25px;
     transform: translateY(-50%);
 }
-.city-search__list {
+.cities-search__dropdown {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
     transform: translateY(100%);
+    z-index: -1;
+    overflow: hidden;
     .dark-theme & {
         background: $dark-primary-color;
     }
@@ -269,11 +289,24 @@ const props = defineProps({
         background: $light-primary-color;
     }
     border-radius: 0 0 35px 35px;
-    z-index: -1;
+    &.fade-in-enter-active,
+    &.fade-in-leave-active {
+        transition: opacity, transform, .3s ease;
+    }
+
+    &.fade-in-enter-from,
+    &.fade-in-leave-to {
+        opacity: 0;
+        transform: translateY(110%);
+    }
+}
+.city-search__list {
+    width: 100%;
     max-height: 220px;
+    z-index: -1;
     overflow: auto;
-    scrollbar-color: $dark-secondary-color $dark-primary-color;
     scrollbar-width: thin;
+    scrollbar-color: $dark-secondary-color $dark-primary-color;
     &::-webkit-scrollbar {
         width: 7px;
         background-color: $dark-primary-color;
@@ -284,15 +317,24 @@ const props = defineProps({
         background-color: $dark-secondary-color;
         height: 20%;
     }
-    &.fade-in-enter-active,
-    &.fade-in-leave-active {
-        transition: opacity, transform, .3s ease;
+    .dark-theme & {
+        scrollbar-color: $dark-secondary-color $dark-primary-color;
+        scrollbar-width: thin;
+        &::-webkit-scrollbar {
+            background-color: $dark-primary-color;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: $dark-secondary-color;
+        }
     }
-
-    &.fade-in-enter-from,
-    &.fade-in-leave-to {
-        opacity: 0;
-        transform: translateY(110%);
+    .light-theme & {
+        scrollbar-color: $dark-primary-color $dark-secondary-color ;
+        &::-webkit-scrollbar {
+            background-color: $dark-secondary-color;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: $dark-primary-color;
+        }
     }
 }
 .city-search__list_item {

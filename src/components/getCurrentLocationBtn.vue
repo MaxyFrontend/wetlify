@@ -8,8 +8,10 @@
 <script setup>
 import { ref } from 'vue'
 import CurrentLocationIcon from './Icons/CurrentLocationIcon.vue'
-import { useCurrentCityStore } from '@/stores/CurrentCityStore.js'
-const CurrentCityStore = useCurrentCityStore()
+import { useWeatherStore } from '@/stores/WeatherStore.js'
+import { useCitiesHistoryStore } from '@/stores/CitiesHistoryStore.js'
+const WeatherStore = useWeatherStore()
+const CitiesHistoryStore = useCitiesHistoryStore()
 const currentCity = ref('')
 const currentCountry = ref('')
 const getCity = (lat, lon) => {
@@ -24,8 +26,9 @@ const getCity = (lat, lon) => {
         .then(result => {
             currentCity.value = result.features[0].properties.city
             currentCountry.value = result.features[0].properties.country
-            CurrentCityStore.setCity(`${currentCity.value}, ${currentCountry.value}`)
-            CurrentCityStore.getWeather(lat, lon)
+            WeatherStore.setCityName(`${currentCity.value}, ${currentCountry.value}`)
+            WeatherStore.getWeather(lat, lon)
+            CitiesHistoryStore.citiesList.push(result.features[0])
         })
 }
 const getCurrentLocation = () => {
@@ -35,8 +38,8 @@ const getCurrentLocation = () => {
 }
 const props = defineProps({
     class: {
-        type:String,
-        required:false,
+        type: String,
+        required: false,
     }
 })
 </script>
@@ -58,6 +61,5 @@ const props = defineProps({
         line-height: 18px;
     }
 }
-@media (max-width:700px) {
-}
+@media (max-width:700px) {}
 </style>

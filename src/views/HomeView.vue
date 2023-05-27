@@ -1,13 +1,13 @@
 
 <script setup>
 import AppHeader from '@/components/AppHeader.vue'
-import { useCurrentCityStore } from '@/stores/CurrentCityStore'
+import { useWeatherStore } from '@/stores/WeatherStore'
 import StartScreen from '../components/StartScreen.vue'
 import ForecastScreen from '../components/ForecastScreen.vue'
-const CurrentCityStore = useCurrentCityStore()
+const WeatherStore = useWeatherStore()
 </script>
 <template>
-  <AppHeader :class="[{'forecast-screen__header': CurrentCityStore.currentWeatherLoading !== null}]" />
+  <AppHeader :class="[{'forecast-screen__header': WeatherStore.currentWeatherLoading !== null}]" />
   <main class="main">
     <StartScreen />
     <ForecastScreen />

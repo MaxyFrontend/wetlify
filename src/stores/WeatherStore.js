@@ -11,15 +11,15 @@ import moonRainIcon from '@/assets/img/moon-rain-clouds.png'
 import snowIcon from '@/assets/img/snow-clouds.png'
 import moonSnowIcon from '@/assets/img/moon-snow-clouds.png'
 import mistIcon from '@/assets/img/mist.png'
-export const useCurrentCityStore = defineStore('CurrentCityStore', {
+export const useWeatherStore = defineStore('WeatherStore', {
     state: () => {
         return {
-            value: '',
+            currentCityName: '',
             dailyWeather: null,
-            dailyWeatherLoading:null,
+            dailyWeatherLoading: null,
             currentWeather: null,
-            currentWeatherLoading:null,
-            weatherLoading:null,
+            currentWeatherLoading: null,
+            weatherLoading: null,
             currentHours: null,
             weatherIcons: [
                 {
@@ -90,8 +90,8 @@ export const useCurrentCityStore = defineStore('CurrentCityStore', {
         }
     },
     actions: {
-        setCity(str) {
-            this.value = str
+        setCityName(name) {
+            this.currentCityName = name
         },
         async getWeather(lat, lon) {
             this.weatherLoading = true
@@ -148,14 +148,14 @@ export const useCurrentCityStore = defineStore('CurrentCityStore', {
                         day.weather[0].icon = item.icon
                     }
                 })
-                let dayDate = new Date(day.dt*1000).toLocaleString('ru',
-                {
-                  day: 'numeric',
-                  month: 'long',
-                });
+                let dayDate = new Date(day.dt * 1000).toLocaleString('ru',
+                    {
+                        day: 'numeric',
+                        month: 'long',
+                    });
                 day.date = dayDate
             })
             this.dailyWeather = dailyWeather
         }
-    },
+    }
 })
