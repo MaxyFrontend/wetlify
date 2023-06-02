@@ -103,7 +103,6 @@ const currentWeather = computed(() => {
 const dailyWeather = computed(() => {
     return WeatherStore.dailyWeather
 })
-console.log(currentWeather)
 const contentLoaderPrimaryColor = computed(() => {
     const getValue = () => {
         if (ColorThemeStore.themes.light.choosen) {
