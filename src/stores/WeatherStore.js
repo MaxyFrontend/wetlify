@@ -1,16 +1,7 @@
 import { defineStore } from 'pinia'
-import sunIcon from '@/assets/img/sun.png'
-import moonIcon from '@/assets/img/moon.png'
-import fewCloudsIcon from '@/assets/img/few-clouds.png'
-import moonCloudsIcon from '@/assets/img/moon-clouds.png'
-import scatteredCloudsIcon from '@/assets/img/scattered-clouds.png'
-import showerRainIcon from '@/assets/img/shower-rain-clouds.png'
-import moonShowerRainIcon from '@/assets/img/moon-showe-rain-clouds.png'
-import rainIcon from '@/assets/img/rain-clouds.png'
-import moonRainIcon from '@/assets/img/moon-rain-clouds.png'
-import snowIcon from '@/assets/img/snow-clouds.png'
-import moonSnowIcon from '@/assets/img/moon-snow-clouds.png'
-import mistIcon from '@/assets/img/mist.png'
+import currentWeatherApi from '@/services/currentWeatherApi'
+import dailyWeatherApi from '@/services/dailyWeatherApi'
+import icons from '@/constants/weatherIcons'
 export const useWeatherStore = defineStore('WeatherStore', {
     state: () => {
         return {
@@ -24,67 +15,67 @@ export const useWeatherStore = defineStore('WeatherStore', {
             weatherIcons: [
                 {
                     iconCode: '01d',
-                    icon: sunIcon
+                    icon: icons.sunIcon
                 },
                 {
                     iconCode: '01n',
-                    icon: moonIcon
+                    icon: icons.moonIcon
                 },
                 {
                     iconCode: '02d',
-                    icon: fewCloudsIcon
+                    icon: icons.fewCloudsIcon
                 },
                 {
                     iconCode: '02n',
-                    icon: moonCloudsIcon
+                    icon: icons.moonCloudsIcon
                 },
                 {
                     iconCode: '03d',
-                    icon: fewCloudsIcon
+                    icon: icons.fewCloudsIcon
                 },
                 {
                     iconCode: '03n',
-                    icon: moonCloudsIcon
+                    icon: icons.moonCloudsIcon
                 },
                 {
                     iconCode: '04d',
-                    icon: scatteredCloudsIcon
+                    icon: icons.scatteredCloudsIcon
                 },
                 {
                     iconCode: '04n',
-                    icon: scatteredCloudsIcon
+                    icon: icons.scatteredCloudsIcon
                 },
                 {
                     iconCode: '09d',
-                    icon: showerRainIcon
+                    icon: icons.showerRainIcon
                 },
                 {
                     iconCode: '09n',
-                    icon: moonShowerRainIcon
+                    icon: icons.moonShowerRainIcon
                 },
                 {
                     iconCode: '10d',
-                    icon: rainIcon
+                    icon: icons.rainIcon
                 },
                 {
                     iconCode: '10n',
-                    icon: moonRainIcon
+                    icon: icons.moonRainIcon
                 },
                 {
                     iconCode: '13d',
-                    icon: snowIcon
+                    icon: icons.snowIcon
                 },
                 {
                     iconCode: '13n',
-                    icon: moonSnowIcon
+                    icon: icons.moonSnowIcon
                 },
                 {
                     iconCode: '50d',
-                    icon: mistIcon
+                    icon: icons.mistIcon
                 },
                 {
                     iconCode: '50n',
-                    icon: mistIcon
+                    icon: icons.mistIcon
                 },
             ]
         }
@@ -95,11 +86,8 @@ export const useWeatherStore = defineStore('WeatherStore', {
         },
         async getWeather(lat, lon) {
             this.weatherLoading = true
-            let apiKey = "9cae9e7ec59a9c3d8c06634e24a541a6"
-            const currentWeatherRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&lang=ru&units=metric&appid=${apiKey}`)
-            const currentWeather = await currentWeatherRes.json()
-            const daliyWeatherRes = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&lang=ru&units=metric&appid=${apiKey}`)
-            const daliyWeather = await daliyWeatherRes.json()
+            const currentWeather = await currentWeatherApi(lat, lon)
+            const daliyWeather = await dailyWeatherApi(lat, lon)
             this.setCurrentWeatherData(currentWeather)
             this.setDailyWeatherData(daliyWeather)
             this.weatherLoading = false
