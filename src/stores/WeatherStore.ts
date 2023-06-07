@@ -159,7 +159,7 @@ export const useWeatherStore = defineStore('WeatherStore', {
         setCityName(name: string): void {
             this.currentCityName = name
         },
-        async getWeather(lat: number, lon: number): Promise<void> {
+        async getWeather(lat: number, lon: number): Promise<string> {
             this.weatherLoading = true
             const currentWeather = await currentWeatherApi(lat, lon)
             const dailyWeather = await dailyWeatherApi(lat, lon)
@@ -167,16 +167,17 @@ export const useWeatherStore = defineStore('WeatherStore', {
                 this.setCurrentWeatherData(currentWeather)
                 this.setDailyWeatherData(dailyWeather)
                 this.weatherLoading = false
+                return 'success'
             }
             else {
                 alert('Что-то пошло не так, попробуйте позже')
                 if(this.currentWeather === null && this.dailyWeather === null) {
                     this.weatherLoading = null
-                    this.currentCityName = ''
                 }
                 else {
                     this.weatherLoading = false
                 }
+                return 'failed'
             }
         },
         setCurrentWeatherData(currentWeatherData: currentWeatherData): void {

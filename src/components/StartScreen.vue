@@ -1,5 +1,5 @@
 <template>
-    <section class="start-screen" v-if="WeatherStore.currentCityName.length === 0">
+    <section class="start-screen" v-if="WeatherStore.weatherLoading === null">
         <div class="container start-screen__container">
             <div class="start-screen__content">
                 <h1 class="start-screen__title">Добро пожаловать на wetlify</h1>

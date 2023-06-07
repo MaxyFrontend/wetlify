@@ -196,8 +196,13 @@ const getRegionForecast = async (id: number) => {
         let currentRegionLon = citiesSearchList.value[id].properties.lon
         let currentCity = citiesSearchList.value[id].properties.city
         let currentCountry = citiesSearchList.value[id].properties.country
-        WeatherStore.setCityName(`${currentCity}, ${currentCountry}`)
-        await WeatherStore.getWeather(currentRegionLat, currentRegionLon)
+        if(WeatherStore.currentCityName === '') {
+            WeatherStore.setCityName(`${currentCity}, ${currentCountry}`)
+        }
+        const result = await WeatherStore.getWeather(currentRegionLat, currentRegionLon)
+        if(result === 'success') {
+            WeatherStore.setCityName(`${currentCity}, ${currentCountry}`)
+        }
     }
 }
 onMounted(() => {

@@ -3,7 +3,7 @@
         <div class="container header__container">
             <AppLogo class="header__logo" />
             <GetCurrentLocationBtn class="header__get-location-btn" v-if="WeatherStore.weatherLoading === null" />
-            <div class="header__location-inner" v-if="WeatherStore.currentCityName.length > 0">
+            <div class="header__location-inner" v-if="WeatherStore.weatherLoading !== null">
                 <div class="current-location header__current-location">
                     <LocationIcon :class="['current-location__icon']" />
                     <p class="current-location__value"> {{ WeatherStore.currentCityName }} </p>
