@@ -5,7 +5,7 @@
             <GetCurrentLocationBtn class="header__get-location-btn" v-if="WeatherStore.weatherLoading === null" />
             <div class="header__location-inner" v-if="WeatherStore.currentCityName.length > 0">
                 <div class="current-location header__current-location">
-                    <LocationIcon class="current-location__icon" />
+                    <LocationIcon :class="['current-location__icon']" />
                     <p class="current-location__value"> {{ WeatherStore.currentCityName }} </p>
                 </div>
                 <CitySearch class="header__city-search" />
@@ -15,13 +15,13 @@
     </header>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import GetCurrentLocationBtn from './getCurrentLocationBtn.vue'
 import AppLogo from '@/components/AppLogo.vue'
 import LocationIcon from './Icons/LocationIcon.vue'
 import CitySearch from './CitySearch.vue';
 import ThemeSwitcher from './ThemeSwitcher.vue';
-import { useWeatherStore } from '@/stores/WeatherStore.js'
+import { useWeatherStore } from '@/stores/WeatherStore'
 const WeatherStore = useWeatherStore()
 </script>
 

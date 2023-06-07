@@ -5,31 +5,29 @@
     </button>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
+import type { Ref, PropType } from 'vue'
 import CurrentLocationIcon from './Icons/CurrentLocationIcon.vue'
-import { useWeatherStore } from '@/stores/WeatherStore.js'
-import { useCitiesHistoryStore } from '@/stores/CitiesHistoryStore.js'
+import { useWeatherStore } from '@/stores/WeatherStore'
+import { useCitiesHistoryStore } from '@/stores/CitiesHistoryStore'
+import getCityApi from '@/services/getCityApi'
 const WeatherStore = useWeatherStore()
 const CitiesHistoryStore = useCitiesHistoryStore()
-const currentCity = ref('')
-const currentCountry = ref('')
-const getCity = (lat, lon) => {
-    let apiKey = '800dd35af7b245af85b0701fa0cdd045'
-    fetch(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&lang=ru&apiKey=${apiKey}`)
-        .then(res => {
-            if (res.ok) {
-                return res.json()
-            }
-            throw new Error('Something went wrong');
-        })
-        .then(result => {
-            currentCity.value = result.features[0].properties.city
-            currentCountry.value = result.features[0].properties.country
-            WeatherStore.setCityName(`${currentCity.value}, ${currentCountry.value}`)
-            WeatherStore.getWeather(lat, lon)
-            CitiesHistoryStore.citiesList.push(result.features[0])
-        })
+const currentCity: Ref<string> = ref('')
+const currentCountry: Ref<string> = ref('')
+const getCity = async (lat: number, lon: number) => {
+    const response = await getCityApi(lat, lon)
+    console.log(response)
+    if (response instanceof Error) {
+        alert('Что-то пошло не так, попробуйте позже')
+        return
+    }
+    currentCity.value = response.properties.city
+    currentCountry.value = response.properties.country
+    WeatherStore.setCityName(`${currentCity.value}, ${currentCountry.value}`)
+    WeatherStore.getWeather(lat, lon)
+    CitiesHistoryStore.addCity(response)
 }
 const getCurrentLocation = () => {
     navigator.geolocation.getCurrentPosition(function (position) {
@@ -38,7 +36,7 @@ const getCurrentLocation = () => {
 }
 const props = defineProps({
     class: {
-        type: String,
+        type: String as PropType<string>,
         required: false,
     }
 })

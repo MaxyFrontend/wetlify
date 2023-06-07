@@ -4,10 +4,11 @@
     </svg>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { PropType } from 'vue'
 const props = defineProps({
     class: {
-        type: String,
+        type: String as PropType<string>,
         required: false,
     }
 })

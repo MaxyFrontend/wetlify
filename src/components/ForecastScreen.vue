@@ -90,18 +90,30 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useWeatherStore } from '@/stores/WeatherStore'
 import { computed } from 'vue';
 import { ContentLoader } from 'vue-content-loader'
 import { useColorThemeStore } from '@/stores/ColorThemeStore'
+import type currentWeatherData from '@/types/currentWeatherData'
+import type {dailyWeatherDataItem} from '@/types/dailyWeatherData'
 const ColorThemeStore = useColorThemeStore()
 const WeatherStore = useWeatherStore()
-const currentWeather = computed(() => {
-    return WeatherStore.currentWeather
+const currentWeather = computed((): currentWeatherData|null => {
+    if(WeatherStore.currentWeather) {
+        return WeatherStore.currentWeather
+    }
+    else {
+        return null
+    }
 })
-const dailyWeather = computed(() => {
-    return WeatherStore.dailyWeather
+const dailyWeather = computed(():dailyWeatherDataItem[]|null => {
+    if(WeatherStore.dailyWeather) {
+        return WeatherStore.dailyWeather
+    }
+    else {
+        return null
+    }
 })
 const contentLoaderPrimaryColor = computed(() => {
     const getValue = () => {

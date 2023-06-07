@@ -13,9 +13,9 @@
     </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CitySearch from "./CitySearch.vue";
-import { useWeatherStore } from '@/stores/WeatherStore.js'
+import { useWeatherStore } from '@/stores/WeatherStore'
 import GetCurrentLocationBtn from './getCurrentLocationBtn.vue'
 const WeatherStore = useWeatherStore()
 </script>

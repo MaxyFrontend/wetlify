@@ -1,9 +1,85 @@
 import { defineStore } from 'pinia'
 import currentWeatherApi from '@/services/currentWeatherApi'
 import dailyWeatherApi from '@/services/dailyWeatherApi'
+import type currentWeatherData from '@/types/currentWeatherData'
+import type {dailyWeatherData, dailyWeatherDataItem} from '@/types/dailyWeatherData'
 import icons from '@/constants/weatherIcons'
+type State = {
+    currentCityName: string,
+    dailyWeather: null | dailyWeatherDataItem[],
+    dailyWeatherLoading: null | boolean,
+    currentWeather: null | currentWeatherData,
+    currentWeatherLoading: null | boolean,
+    weatherLoading: null | boolean,
+    weatherIcons: [
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+        {
+            iconCode: string,
+            icon: string
+        },
+    ]
+}
 export const useWeatherStore = defineStore('WeatherStore', {
-    state: () => {
+    state: (): State => {
         return {
             currentCityName: '',
             dailyWeather: null,
@@ -11,7 +87,6 @@ export const useWeatherStore = defineStore('WeatherStore', {
             currentWeather: null,
             currentWeatherLoading: null,
             weatherLoading: null,
-            currentHours: null,
             weatherIcons: [
                 {
                     iconCode: '01d',
@@ -81,26 +156,38 @@ export const useWeatherStore = defineStore('WeatherStore', {
         }
     },
     actions: {
-        setCityName(name) {
+        setCityName(name: string): void {
             this.currentCityName = name
         },
-        async getWeather(lat, lon) {
+        async getWeather(lat: number, lon: number): Promise<void> {
             this.weatherLoading = true
             const currentWeather = await currentWeatherApi(lat, lon)
-            const daliyWeather = await dailyWeatherApi(lat, lon)
-            this.setCurrentWeatherData(currentWeather)
-            this.setDailyWeatherData(daliyWeather)
-            this.weatherLoading = false
+            const dailyWeather = await dailyWeatherApi(lat, lon)
+            if(!(currentWeather instanceof Error) && !(dailyWeather instanceof Error)) {
+                this.setCurrentWeatherData(currentWeather)
+                this.setDailyWeatherData(dailyWeather)
+                this.weatherLoading = false
+            }
+            else {
+                alert('Что-то пошло не так, попробуйте позже')
+                if(this.currentWeather === null && this.dailyWeather === null) {
+                    this.weatherLoading = null
+                    this.currentCityName = ''
+                }
+                else {
+                    this.weatherLoading = false
+                }
+            }
         },
-        setCurrentWeatherData(currentWeatherData) {
-            let currentWeather = currentWeatherData
+        setCurrentWeatherData(currentWeatherData: currentWeatherData): void {
+            const currentWeather: currentWeatherData = currentWeatherData
             currentWeather.main.pressure *= 0.75
-            for (let item in currentWeather.main) {
-                let value = currentWeather.main[item]
-                currentWeather.main[item] = Math.round(value)
+            for (const item in currentWeather.main) {
+                const value: number = currentWeather.main[item as keyof typeof currentWeather.main]
+                currentWeather.main[item as keyof typeof currentWeather.main] = Math.round(value)
             }
             let description = currentWeather.weather[0].description
-            let descriptionArr = description.split('')
+            const descriptionArr = description.split('')
             descriptionArr[0] = descriptionArr[0].toUpperCase()
             description = descriptionArr.join('')
             currentWeather.weather[0].description = description
@@ -109,25 +196,23 @@ export const useWeatherStore = defineStore('WeatherStore', {
                     currentWeather.weather[0].icon = item.icon
                 }
             })
-            // cal current date & time
-            const localOffset = new Date().getTimezoneOffset() * 60000;
-            const utc = currentWeather.dt * 1000 + localOffset;
-            currentWeather.currentHours = new Date(utc + 1000 * currentWeather.timezone).getHours();
             this.currentWeather = currentWeather
         },
-        setDailyWeatherData(otherDaysWeatherData) {
-            let dailyWeather = otherDaysWeatherData.list
-            dailyWeather = dailyWeather.filter((item, idx) => {
-                return (idx + 1) % 8 === 0
-            })
-            dailyWeather.forEach(day => {
+        setDailyWeatherData(otherDaysWeatherData: dailyWeatherData): void {
+            let dailyWeather: dailyWeatherDataItem[] = otherDaysWeatherData.list
+            if (dailyWeather.length > 0) {
+                dailyWeather = dailyWeather.filter((item, idx: number) => {
+                    return (idx + 1) % 8 === 0
+                })
+            }
+            dailyWeather.forEach((day) => {
                 day.main.pressure *= 0.75
-                for (let item in day.main) {
-                    let value = day.main[item]
-                    day.main[item] = Math.round(value)
+                for (const item in day.main) {
+                    const value = day.main[item as keyof typeof day.main]
+                    day.main[item as keyof typeof day.main] = Math.round(value)
                 }
                 let description = day.weather[0].description
-                let descriptionArr = description.split('')
+                const descriptionArr = description.split('')
                 descriptionArr[0] = descriptionArr[0].toUpperCase()
                 description = descriptionArr.join('')
                 day.weather[0].description = description
@@ -136,7 +221,7 @@ export const useWeatherStore = defineStore('WeatherStore', {
                         day.weather[0].icon = item.icon
                     }
                 })
-                let dayDate = new Date(day.dt * 1000).toLocaleString('ru',
+                const dayDate = new Date(day.dt * 1000).toLocaleString('ru',
                     {
                         day: 'numeric',
                         month: 'long',

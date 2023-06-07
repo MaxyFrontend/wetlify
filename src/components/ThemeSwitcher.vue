@@ -7,14 +7,15 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import SunIcon from "./Icons/SunIcon.vue";
 import MoonIcon from "./Icons/MoonIcon.vue";
 import { reactive } from 'vue';
+import type { PropType } from 'vue'
 import { useColorThemeStore } from '@/stores/ColorThemeStore'
 const ColorThemeStore = useColorThemeStore()
 const themeModes = reactive(ColorThemeStore.themes)
-const chooseTheme = (currentMode) => {
+const chooseTheme = (currentMode:string):void => {
     if (currentMode === 'light') {
         ColorThemeStore.switchToLight()
     }
@@ -25,9 +26,9 @@ const chooseTheme = (currentMode) => {
 ColorThemeStore.getThemeFromLS()
 const props = defineProps({
     class: {
-        type: String,
-        required: false
-    }
+        type: String as PropType<string>,
+        required: false,
+    },
 })
 </script>
 

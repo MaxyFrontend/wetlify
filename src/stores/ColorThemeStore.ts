@@ -1,6 +1,18 @@
 import { defineStore } from 'pinia'
+interface state {
+    themes: {
+        light: {
+            icon: string,
+            choosen: boolean
+        },
+        dark: {
+            icon: string,
+            choosen: boolean
+        }
+    }
+}
 export const useColorThemeStore = defineStore('ColorThemeStore', {
-    state: () => {
+    state: ():state => {
         return {
             themes: {
                 light: {
@@ -15,18 +27,18 @@ export const useColorThemeStore = defineStore('ColorThemeStore', {
         }
     },
     actions: {
-        switchToLight() {
+        switchToLight():void {
             this.themes.light.choosen = true
             this.themes.dark.choosen = false
             localStorage.setItem('theme', 'light')
         },
-        switchToDark() {
+        switchToDark():void {
             this.themes.dark.choosen = true
             this.themes.light.choosen = false
             localStorage.setItem('theme', 'dark')
         },
-        getThemeFromLS() {
-            let theme = localStorage.getItem('theme')
+        getThemeFromLS():void {
+            const theme: string | null = localStorage.getItem('theme')
             if(theme) {
                 if(theme === 'light') {
                     this.themes.light.choosen = true

@@ -13,14 +13,15 @@
         
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { PropType } from 'vue'
 const props = defineProps({
-	class: {
-		type: String,
-		required: false,
-	},
+    class: {
+        type: String as PropType<string>,
+        required: false,
+    },
     color: {
-        type:String,
+        type:String as PropType<string>,
         required:false,
         default:'#323232'
     }
