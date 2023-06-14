@@ -337,12 +337,12 @@ const props = defineProps({
         }
     }
     .light-theme & {
-        scrollbar-color: $dark-primary-color $dark-secondary-color ;
+        scrollbar-color: $light-secondary-color $light-primary-color;
         &::-webkit-scrollbar {
-            background-color: $dark-secondary-color;
+            background-color: $light-primary-color;
         }
         &::-webkit-scrollbar-thumb {
-            background-color: $dark-primary-color;
+            background-color: $light-secondary-color;
         }
     }
 }
