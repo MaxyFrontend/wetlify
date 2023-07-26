@@ -50,6 +50,10 @@ const WeatherStore = useWeatherStore()
 }
 .start-screen__get-location-btn {
     display: none;
+    & .get-current-location__loader {
+        width: 30px;
+        height: 30px;
+    }
 }
 @media (max-width:1600px) {
     .start-screen__title {
@@ -110,6 +114,9 @@ const WeatherStore = useWeatherStore()
         & .get-current-location_btn_text {
             margin-top: 20px;
             margin-left: 0;
+        }
+        & .get-current-location__loader {
+            margin: 20px 0 0 0;
         }
     }
 }
