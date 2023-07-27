@@ -10,7 +10,7 @@
                 <p class="city-search__list_error" v-if="citiesSearchList.length === 0 && citySearchQuery.length > 0">Такого населенного пункта нет</p>
                 <div class="city-search__list" v-if="citiesSearchList">
                     <div :class="['city-search__list_item', { 'active': citiesSearchList[idx].active }]" v-for="(item, idx) in citiesSearchList" :key="idx" @click="cityChoose(idx)" @mouseenter="dropDownItemHover(idx)">
-                        <template v-if="item.properties.state.length>0">
+                        <template v-if="item.properties.state?.length>0">
                             {{ item.properties.city + ', ' + item.properties.state + ', ' + item.properties.country }}
                         </template>
                         <template v-else>

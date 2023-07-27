@@ -2,8 +2,12 @@ import { defineStore } from 'pinia'
 import currentWeatherApi from '@/services/currentWeatherApi'
 import dailyWeatherApi from '@/services/dailyWeatherApi'
 import type currentWeatherData from '@/types/currentWeatherData'
-import type {dailyWeatherData, dailyWeatherDataItem} from '@/types/dailyWeatherData'
+import type { dailyWeatherData, dailyWeatherDataItem } from '@/types/dailyWeatherData'
 import icons from '@/constants/weatherIcons'
+interface weatherIcon {
+    iconCode: string,
+    icon: string
+}
 type State = {
     currentCityName: string,
     dailyWeather: null | dailyWeatherDataItem[],
@@ -11,72 +15,7 @@ type State = {
     currentWeather: null | currentWeatherData,
     currentWeatherLoading: null | boolean,
     weatherLoading: null | boolean,
-    weatherIcons: [
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-        {
-            iconCode: string,
-            icon: string
-        },
-    ]
+    weatherIcons: weatherIcon[]
 }
 export const useWeatherStore = defineStore('WeatherStore', {
     state: (): State => {
@@ -163,7 +102,7 @@ export const useWeatherStore = defineStore('WeatherStore', {
             this.weatherLoading = true
             const currentWeather = await currentWeatherApi(lat, lon)
             const dailyWeather = await dailyWeatherApi(lat, lon)
-            if(!(currentWeather instanceof Error) && !(dailyWeather instanceof Error)) {
+            if (!(currentWeather instanceof Error) && !(dailyWeather instanceof Error)) {
                 this.setCurrentWeatherData(currentWeather)
                 this.setDailyWeatherData(dailyWeather)
                 this.weatherLoading = false
@@ -171,7 +110,7 @@ export const useWeatherStore = defineStore('WeatherStore', {
             }
             else {
                 alert('Что-то пошло не так, попробуйте позже')
-                if(this.currentWeather === null && this.dailyWeather === null) {
+                if (this.currentWeather === null && this.dailyWeather === null) {
                     this.weatherLoading = null
                 }
                 else {
